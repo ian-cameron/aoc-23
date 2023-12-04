@@ -94,6 +94,49 @@ bool ValidPartNumber(int startRow, int startCol, int length, int rows, int cols,
    }
    return false;
 }
+
+int FindGearRatio(int row, int col, int rows, int cols, int (*numberMap)[cols]) {
+   int adjacents[12];
+   adjacents[0] = adjacents[4] = adjacents[6] = adjacents [10] = 0;
+   if (row - 1 >= 0) {
+         //Upper left
+         adjacents[1] = (col - 1 >= 0) ? numberMap[row-1][col-1] : 0;
+         //Above
+         adjacents[2] = numberMap[row-1][col];
+         //Upper right
+         adjacents[3] = (col + 1 >= 0) ? numberMap[row-1][col+1] : 0;
+      }
+      else {
+         adjacents[1] = adjacents[2] = adjacents[3] = 0;
+      }
+      //Right
+      adjacents[5]= (col + 1 < cols) ? numberMap[row][col+1] : 0;
+      if (row + 1 < rows) {
+         //Lower right
+         adjacents[7] = (col + 1 < cols) ? numberMap[row+1][col+1] : 0;
+         //Under
+         adjacents[8] = numberMap[row+1][col];
+         //Lower left
+         adjacents[9] = (col - 1 >= 0) ? numberMap[row+1][col-1] : 0;
+      }
+      else {
+         adjacents[7] = adjacents[8] = adjacents[9] = 0;
+      }
+      //Left
+      adjacents[11] = (col - 1 >= 0) ? numberMap[row][col-1] : 0;
+      int a = 0;
+      int b = 0;
+      int i = 0;
+      do {
+         if (adjacents[i] > 0 && a == 0)
+            a = adjacents[i];
+         else if (i != 0 && adjacents[i-1] == 0 && a != 0 && b == 0)
+            b = adjacents[i];
+         i++;
+      } while (a * b == 0 && i < 12);
+      return a * b;  
+}
+
 int main() {
    FILE *fp;
    char filename[] = INPUT;
@@ -137,7 +180,7 @@ int main() {
                numberMap[i][k] = result.PartNumber.value;
             }
             j = j + result.PartNumber.length;
-           
+            numberMap[i][j] = 0;
             if (ValidPartNumber(result.PartNumber.startrow, result.PartNumber.startcol, result.PartNumber.length, lines-1, colsPerRow-1, schematic)) {
                partCount++;
                grandTotal = grandTotal + result.PartNumber.value;
@@ -148,22 +191,17 @@ int main() {
             numberMap[i][j] = 0;
          }
       }
-      printf("\nLine %d maped: ", i+1);
-      for (int h = 0; h < columns; h++)
-      {
-         printf("%d,",numberMap[i][h]);
-      }
    }
    
    printf("\nPart 1: %d\n", grandTotal);
-   int gears = 0;
+   long gearRatioTotal = 0;
    for (int i = 0; i < lines; i++) {
       for (int j = 0; j < columns; j++) {
          if (schematic[i][j] == '*') {
-            gears++;
+            gearRatioTotal = gearRatioTotal + FindGearRatio(i, j, lines, colsPerRow-1, numberMap);
          }
       }
    }
-   printf("Part 2: %d", gears);
+   printf("Part 2: %d", gearRatioTotal);
    return 0;
 }
