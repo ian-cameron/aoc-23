@@ -47,9 +47,12 @@ using (StreamReader reader = new StreamReader(Path.Combine(Path.GetDirectoryName
     Console.WriteLine($"Part 1: {LocationsForSeeds.OrderBy(s => s.Value).First().Value}");
 
     var SeedRanges = new HashSet<long>();
-    for (int i = 0; i < Seeds.Count; i=i+2) {
+    for (int i = 0; i < Seeds.Count; i+=2) {
         for(long j = Seeds[i]; j < Seeds[i]+Seeds[i+1]; j++) {
             SeedRanges.Add(j);
+            if(MapSeed(j+10000) - MapSeed(j) == 10000) {
+                j +=1000;
+            }
         }
     }
 
