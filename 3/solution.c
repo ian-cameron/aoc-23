@@ -165,8 +165,8 @@ int main() {
 
    lines = sizeof(schematic)/sizeof(schematic[0]);
    columns = sizeof(schematic[0])-1;
-   printf("Number of lines: %d\n", lines);
-   printf("Number of columns: %d\n", columns);
+  // printf("Number of lines: %d\n", lines);
+  // printf("Number of columns: %d\n", columns);
    int partCount = 0;
    int grandTotal = 0;
    int numberMap[lines][columns];
@@ -193,7 +193,7 @@ int main() {
       }
    }
    
-   printf("\nPart 1: %d\n", grandTotal);
+   printf("Part 1: %d\n", grandTotal);
    long gearRatioTotal = 0;
    for (int i = 0; i < lines; i++) {
       for (int j = 0; j < columns; j++) {
@@ -202,6 +202,6 @@ int main() {
          }
       }
    }
-   printf("Part 2: %d", gearRatioTotal);
+   printf("Part 2: %d\n", gearRatioTotal);
    return 0;
 }

@@ -1,5 +1,7 @@
 ```
 gcc solution.c -o solution && .\solution
+Part 1: 520019
+Part 2: 75519888
 ```
 
 ### Day 3: Gear Ratios

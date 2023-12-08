@@ -1,5 +1,7 @@
 ```
 dotnet run
+Part 1: 240320250
+Part 2: 28580589
 ```
 
 ### Day 5: If You Give A Seed A Fertilizer

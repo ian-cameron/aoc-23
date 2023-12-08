@@ -1,5 +1,7 @@
 ```
 g++ solution.cpp -o solution && solution
+Part 1: 18619
+Part 2: 8063216
 ```
 
 ### Day 4: Scratchcards
