@@ -1,0 +1,7 @@
+*.exe
+*.o
+*.csproj
+*.sln
+*.obj
+.vscode/
+tempCodeRunnerFile*
