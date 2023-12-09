@@ -1,3 +1,9 @@
+```
+fpc solution.pas && solution
+Part 1: 14893
+Part 2: 10241191004509
+```
+
 ### Day 8: Haunted Wasteland
 You're still riding a camel across Desert Island when you spot a sandstorm quickly approaching. When you turn to warn the Elf, she disappears before your eyes! To be fair, she had just finished warning you about ghosts a few minutes ago.
 
