@@ -1,4 +1,7 @@
-program ReadFile;
+program Solution;
+const
+  FILE_NAME = 'input';
+
 type
   StoreRecord = record
     key: string;
@@ -61,7 +64,6 @@ result := start;
       end;
     end;
     move := move+1;
-    
   until TestResult(result,destination);
   GetMoves := move;
 end;
@@ -123,7 +125,7 @@ var
   move: int64;
   
 begin
-  Assign(input, 'input');
+  Assign(input, FILE_NAME);
   Reset(input);
   line := '';
   repeat
