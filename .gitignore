@@ -1,5 +1,6 @@
 *.exe
 *.o
+*.class
 *.csproj
 *.sln
 *.obj
@@ -7,3 +8,4 @@
 tempCodeRunnerFile*
 node_modules/
 example
+
