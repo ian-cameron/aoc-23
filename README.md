@@ -44,7 +44,7 @@ Its day 12 and things have gotten a lot more difficult.  These are now hard enou
 |Day 10| VB |[solution.vb](/10) |
 |Day 11| Crystal |[solution.cr](/11) |
 |Day 12| Ruby |[solution.rb](/12) |
-|Day 13| ? |[](/13) |
+|Day 13| Java |[solution.java](/13) |
 |Day 14| ? |[](/14) |
 |Day 15| ? |[](/15) |
 |Day 16| ? |[](/16) |

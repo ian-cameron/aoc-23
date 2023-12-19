@@ -1,3 +1,9 @@
+```
+javac solution.java && java solution
+Part 1: 28651
+Part 2: 25450
+```
+
 ### Point of Incidence
 With your help, the hot springs team locates an appropriate spring which launches you neatly and precisely up to the edge of Lava Island.
 

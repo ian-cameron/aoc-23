@@ -21,8 +21,9 @@ public class solution {
                     for (int i = 0; i < cols.size(); i++)
                         currentPuzzle.addCol(cols.get(i));
                     puzzles.add(currentPuzzle);
-                    currentPuzzle = new Puzzle(puzzleNumber);
                     puzzleNumber += 1;
+                    currentPuzzle = new Puzzle(puzzleNumber);
+
                     cols = null;
                 } else { // New puzzle board starts
                     char[] chars = line.toCharArray();
@@ -36,7 +37,6 @@ public class solution {
                             cols.set(i, cols.get(i) + chars[i]);
                     }
                 }
-
             }
             if (currentPuzzle != null) { // Add last puzzle
                 for (int i = 0; i < cols.size(); i++)
@@ -48,11 +48,14 @@ public class solution {
         }
 
         int score = 0;
+        int score2 = 0;
         for (Puzzle puzzle : puzzles) {
             puzzle.getReflections();
             score = score + puzzle.getScore();
+            score2 = score2 + puzzle.getScore2();
         }
         System.out.println("Part 1: " + score);
+        System.out.println("Part 2: " + score2);
     }
 }
 
@@ -62,6 +65,8 @@ class Puzzle {
     private List<String> cols;
     private int colReflection;
     private int rowReflection;
+    private int colSmudgedReflection;
+    private int rowSmudgedReflection;
 
     public Puzzle(int puzzleNumber) {
         this.puzzleNumber = puzzleNumber;
@@ -77,12 +82,8 @@ class Puzzle {
         return colReflection + 100 * rowReflection;
     }
 
-    public List<String> getRows() {
-        return rows;
-    }
-
-    public List<String> getCols() {
-        return cols;
+    public int getScore2() {
+        return colSmudgedReflection + 100 * rowSmudgedReflection;
     }
 
     public void addRow(String value) {
@@ -94,38 +95,106 @@ class Puzzle {
     }
 
     public void getReflections() {
-        System.out.println("\npuzzle: " + puzzleNumber);
-        for (int i = 0; i < rows.size(); i++)
-            System.out.println(rows.get(i));
-        colReflection = FindReflection(cols);
-        if (colReflection > 0)
-            System.out.println("Column POR: " + colReflection);
-        rowReflection = FindReflection(rows);
-        if (rowReflection > 0)
-            System.out.println("Row POR: " + rowReflection);
+        colReflection = findReflection(cols, -1);
+        rowReflection = findReflection(rows, -1);
+
+        Tuple colSmudgedReflectionS = findSmudgedReflection(cols, colReflection);
+        if (colSmudgedReflectionS.row >= 0)
+            cols = fixSmudge(cols, colSmudgedReflectionS);
+
+        Tuple rowSmudgedReflectionS = findSmudgedReflection(rows, rowReflection);
+        if (rowSmudgedReflectionS.row >= 0)
+            rows = fixSmudge(rows, rowSmudgedReflectionS);
+
+        colSmudgedReflection = findReflection(cols, colReflection);
+        rowSmudgedReflection = findReflection(rows, rowReflection);
     }
 
-    public static int FindReflection(List<String> l) {
+    public static List<String> fixSmudge(List<String> l, Tuple fix) {
+        char[] smudged = l.get(fix.row).toCharArray();
+        smudged[fix.col] = smudged[fix.col] == '#' ? '.' : '#';
+        l.set(fix.row, new String(smudged));
+        return l;
+    }
+
+    // Returns row number of the point of reflection
+    public static int findReflection(List<String> l, int ignore) {
         int por = 0;
-        for (int i = 1; i < l.size(); i++) {
-            if (l.get(i).equals(l.get(i - 1))) {
-                System.out.println("I think " + l.get(i) + " equals " + l.get(i - 1));
-                int res = FindReflection(l, i, 0);
+        for (int i = 1; i < l.size(); i++)
+            if (l.get(i).equals(l.get(i - 1)) && i != ignore) {
+                int res = findReflection(l, i, 0);
                 por = res == 0 ? por : res;
             }
-        }
         return por;
     }
 
-    public int FindReflection(List<String> l, int por, int n) {
-        int max = l.size();
-        // System.out.println("o: " + por + ", n: " + n);
-        if (por - n <= 0 || por + n >= max)
+    public static int findReflection(List<String> l, int por, int n) {
+        if (por - n <= 0 || por + n >= l.size())
             return por;
         if (l.get(por - 1 - n).equals(l.get(por + n)))
-            return FindReflection(l, por, n + 1);
-        else
-            return 0;
+            return findReflection(l, por, n + 1);
+        return 0;
+    }
 
+    // Need to find a single smudge that if fixed would create a new point of
+    // reflection, ignoring the previously found reflection, if any.
+    // So it needs to look forward to check if every possible smudge would be a new
+    // PoR.
+    public static Tuple findSmudgedReflection(List<String> l, int ignore) {
+        Tuple result = new Tuple(-1, -1);
+        l = new ArrayList<>(l);
+        for (int i = 1; i <= l.size(); i++) {
+            if (i == ignore)
+                continue;
+            if (findSmudgedReflection(new ArrayList<>(l), i, 0, 0) > 0) {
+                // this i is a new PoR row number, figure out where the smudge is
+                for (int j = 0; j + i < l.size() && i - j > 0; j++) {
+                    int ss = findSingleSmudge(l.get(i - 1 - j), l.get(i + j));
+                    if (ss > -1)
+                        return new Tuple(i - 1 - j, ss);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static int findSmudgedReflection(List<String> l, int por, int n, int smudges) {
+        if ((por - 1 - n < 0 || por + n >= l.size()))
+            return smudges == 1 ? por : 0;
+        int ind = findSingleSmudge(l.get(por - 1 - n), l.get(por + n));
+        if (ind != -1 && smudges == 0) {
+            l = fixSmudge(l, new Tuple(por - 1 - n, ind));
+            return findSmudgedReflection(l, por, n + 1, 1);
+        }
+        if (!l.get(por - 1 - n).equals(l.get(por + n)))
+            return 0;
+        return findSmudgedReflection(l, por, n + 1, smudges);
+    }
+
+    // Returns index of the character that needs to swap to make two strings equal.
+    // Returns -1 if there are more than 1 differences.
+    public static int findSingleSmudge(String s1, String s2) {
+        int differenceCount = 0;
+        int index = -1;
+        for (int i = 0; i < s1.length(); i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                differenceCount++;
+                index = i;
+                if (differenceCount > 1)
+                    return -1;
+            }
+        }
+        return index;
+    }
+}
+
+// Holds row index and column index
+class Tuple {
+    public int row;
+    public int col;
+
+    public Tuple(int r, int c) {
+        this.row = r;
+        this.col = c;
     }
 }
